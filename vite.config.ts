@@ -13,9 +13,9 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 
-			// Client-only SPA: all data lives in the browser (IndexedDB), so there is no
-			// server to render. The fallback page boots the app for any non-prerendered route.
-			adapter: adapter({ fallback: '200.html' })
+			// Full static site generation: every route is prerendered to HTML at build
+			// time (see prerender in +layout.ts). No fallback — there are no dynamic routes.
+			adapter: adapter()
 		})
 	]
 });
