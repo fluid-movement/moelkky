@@ -4,6 +4,7 @@
 	import { flip } from 'svelte/animate';
 	import { scale } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { players as playerRepo } from '$lib/db/index.js';
@@ -19,6 +20,7 @@
 	let selectedIds = $state<string[]>([]);
 	let newName = $state('');
 	let loading = $state(true);
+	let pendingRemoval = $state<Player | null>(null);
 
 	const canStart = $derived(selectedIds.length >= 2);
 
@@ -62,6 +64,14 @@
 		await playerRepo.remove(id);
 		pool = pool.filter((p) => p.id !== id);
 		selectedIds = selectedIds.filter((x) => x !== id);
+	}
+
+	async function confirmRemoval() {
+		const player = pendingRemoval;
+		pendingRemoval = null;
+		if (!player) return;
+		haptics.tap();
+		await removePlayer(player.id);
 	}
 
 	function start() {
@@ -144,7 +154,7 @@
 							variant="ghost"
 							size="icon"
 							aria-label={`Remove ${player.name}`}
-							onclick={() => removePlayer(player.id)}
+							onclick={() => (pendingRemoval = player)}
 							class="transition-transform active:scale-90"
 						>
 							<Trash2 class="text-muted-foreground size-4" />
@@ -173,3 +183,22 @@
 		{/key}
 	</footer>
 </div>
+
+<Dialog.Root
+	bind:open={() => pendingRemoval !== null, (v) => (pendingRemoval = v ? pendingRemoval : null)}
+>
+	<Dialog.Content class="sm:max-w-sm">
+		<Dialog.Header>
+			<Dialog.Title>Delete player?</Dialog.Title>
+			<Dialog.Description>
+				{#if pendingRemoval}
+					Deleting {pendingRemoval.name} will delete their stats too. This can't be undone.
+				{/if}
+			</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (pendingRemoval = null)}>Cancel</Button>
+			<Button variant="destructive" onclick={confirmRemoval}>Delete player</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

@@ -9,13 +9,15 @@
 	import { computeAllStats } from '$lib/game/stats.js';
 	import { motion } from '$lib/motion/reduced-motion.svelte.js';
 	import AnimatedNumber from '$lib/motion/animated-number.svelte';
+	import { haptics } from '$lib/motion/haptics.js';
 	import type { GameRecord, Player, PlayerStats } from '$lib/game/types';
-	import { ArrowLeft, ChartColumn } from '@lucide/svelte';
+	import { ArrowLeft, ChartColumn, Trash2 } from '@lucide/svelte';
 
 	let players = $state<Player[]>([]);
 	let history = $state<GameRecord[]>([]);
 	let loading = $state(true);
 	let selectedId = $state<string | null>(null);
+	let resetOpen = $state(false);
 
 	const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -43,6 +45,14 @@
 		return games === 0 ? '—' : `${Math.round(rate * 100)}%`;
 	}
 
+	async function resetStats() {
+		resetOpen = false;
+		haptics.tap();
+		await gameRepo.clearCompleted();
+		history = [];
+		selectedId = null;
+	}
+
 	const rowIn = (i: number) =>
 		motion.ok
 			? { y: 10, delay: Math.min(i, 8) * 45, duration: 320, easing: cubicOut }
@@ -55,6 +65,17 @@
 			<ArrowLeft />
 		</Button>
 		<h1 class="font-display text-sm">Stats</h1>
+		{#if !loading && history.length > 0}
+			<Button
+				variant="ghost"
+				size="icon"
+				aria-label="Reset stats"
+				onclick={() => (resetOpen = true)}
+				class="ml-auto transition-transform active:scale-90"
+			>
+				<Trash2 class="text-muted-foreground size-4" />
+			</Button>
+		{/if}
 	</header>
 
 	{#if loading}
@@ -148,5 +169,21 @@
 				{/if}
 			</div>
 		{/if}
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root bind:open={resetOpen}>
+	<Dialog.Content class="sm:max-w-sm">
+		<Dialog.Header>
+			<Dialog.Title>Reset stats?</Dialog.Title>
+			<Dialog.Description>
+				Are you sure you want to delete all data? Every game and all stats will be gone. This can't
+				be undone.
+			</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (resetOpen = false)}>Cancel</Button>
+			<Button variant="destructive" onclick={resetStats}>Delete all data</Button>
+		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

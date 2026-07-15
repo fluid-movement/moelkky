@@ -18,6 +18,8 @@ export interface GameRepository {
 	/** All completed games, used to derive stats. */
 	listCompleted(): Promise<GameRecord[]>;
 	saveCompleted(record: GameRecord): Promise<void>;
+	/** Delete every completed game, resetting all derived stats. */
+	clearCompleted(): Promise<void>;
 	/** Persist the in-progress game so a refresh can resume it. */
 	saveActive(game: ActiveGame): Promise<void>;
 	loadActive(): Promise<ActiveGame | null>;

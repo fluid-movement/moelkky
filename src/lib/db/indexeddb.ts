@@ -71,6 +71,10 @@ export const indexedDbGames: GameRepository = {
 		const db = await getDB();
 		await db.put('games', record);
 	},
+	async clearCompleted() {
+		const db = await getDB();
+		await db.clear('games');
+	},
 	async saveActive(game) {
 		const db = await getDB();
 		await db.put('meta', game, ACTIVE_KEY);
