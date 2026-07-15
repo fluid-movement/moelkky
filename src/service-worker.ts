@@ -2,9 +2,9 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-// SvelteKit's built-in service worker. Precaches the app shell + static files so the
-// app opens offline; game data itself already lives offline in IndexedDB.
-import { build, files, version } from '$service-worker';
+// SvelteKit's built-in service worker. Precaches the app shell, static files, and the
+// prerendered pages so the app opens offline; game data itself lives in IndexedDB.
+import { build, files, prerendered, version } from '$service-worker';
 
 const self = globalThis.self as unknown as ServiceWorkerGlobalScope;
 
@@ -12,7 +12,8 @@ const CACHE = `molkky-cache-${version}`;
 
 const ASSETS = [
 	...build, // the app itself (hashed JS/CSS)
-	...files // everything in `static` (icons, manifest, ...)
+	...files, // everything in `static` (icons, manifest, ...)
+	...prerendered // prerendered HTML routes (SSG output)
 ];
 
 self.addEventListener('install', (event) => {

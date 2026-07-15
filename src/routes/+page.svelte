@@ -3,6 +3,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import SettingsDialog from '$lib/components/settings-dialog.svelte';
+	import InstallButton from '$lib/components/install-button.svelte';
 	import { motion } from '$lib/motion/reduced-motion.svelte.js';
 	import { ChartColumn, Play } from '@lucide/svelte';
 
@@ -58,6 +59,7 @@
 					Stats
 				</Button>
 			</div>
+			<InstallButton />
 		</div>
 	</main>
 </div>
