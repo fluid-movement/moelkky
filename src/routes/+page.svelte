@@ -22,13 +22,18 @@
 				<img
 					src="/icons/icon.svg"
 					alt=""
-					width="88"
-					height="88"
-					class="animate-bob rounded-3xl shadow-lg"
+					width="96"
+					height="96"
+					class="animate-bob [image-rendering:pixelated]"
 				/>
 			</div>
-			<h1 class="text-4xl font-extrabold tracking-tight" in:fly={enter(80)}>Mölkky</h1>
-			<p class="text-muted-foreground" in:fly={enter(140)}>Score the game. Track the wins.</p>
+			<h1
+				class="font-display text-primary text-glow mt-1 text-2xl leading-tight"
+				in:fly={enter(80)}
+			>
+				Mölkky
+			</h1>
+			<p class="text-muted-foreground" in:fly={enter(140)}>Let's Finnish this.</p>
 		</div>
 
 		<div class="flex w-full flex-col gap-3">

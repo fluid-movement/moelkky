@@ -117,7 +117,7 @@
 
 <div class="relative mx-auto flex min-h-svh w-full max-w-2xl flex-col">
 	<header class="flex items-center justify-between gap-2 px-4 py-3">
-		<h1 class="text-lg font-semibold">Scoring</h1>
+		<h1 class="font-display text-sm">Scoring</h1>
 		<Button
 			href="/"
 			variant="ghost"
@@ -136,9 +136,9 @@
 			out:scale={motion.ok ? { start: 0.9, duration: 200 } : { duration: 0 }}
 		>
 			<span
-				class="rounded-full px-4 py-1.5 text-sm font-semibold shadow-lg {flash.tone === 'bust'
+				class="font-display px-4 py-2 text-[10px] shadow-lg {flash.tone === 'bust'
 					? 'bg-destructive text-white'
-					: 'bg-foreground text-background'}"
+					: 'bg-primary text-primary-foreground'}"
 			>
 				{flash.text}
 			</span>
@@ -168,7 +168,9 @@
 										{player.name}
 									</span>
 									<span
-										class="text-2xl font-bold tabular-nums {st.hasWon ? 'text-primary' : ''}"
+										class="font-display text-xl tabular-nums {st.hasWon
+											? 'text-primary text-glow'
+											: ''}"
 										class:animate-bust={bustFlash === p}
 									>
 										<AnimatedNumber value={st.total} />
@@ -243,7 +245,7 @@
 				{#each keypad as n (n)}
 					<Button
 						variant="outline"
-						class="h-12 text-lg font-semibold transition-transform active:scale-95"
+						class="font-display h-12 text-sm transition-transform active:scale-95"
 						disabled={!targetCell}
 						onclick={() => press(n)}
 					>
@@ -272,7 +274,9 @@
 				>
 					<Trophy class="text-gold size-8" />
 				</div>
-				<Dialog.Title class="text-2xl">{activeGame.winner?.name} wins!</Dialog.Title>
+				<Dialog.Title class="font-display text-primary text-glow text-lg leading-relaxed">
+					{activeGame.winner?.name} wins!
+				</Dialog.Title>
 				<Dialog.Description>Reached 50. Nicely thrown.</Dialog.Description>
 			</div>
 		</Dialog.Header>

@@ -80,7 +80,7 @@
 		<Button href="/" variant="ghost" size="icon" aria-label="Back">
 			<ArrowLeft />
 		</Button>
-		<h1 class="text-xl font-semibold">New game</h1>
+		<h1 class="font-display text-sm">New game</h1>
 	</header>
 
 	<form

@@ -59,6 +59,8 @@
 		}
 	},
 	"dependencies": {
+		"@fontsource-variable/pixelify-sans": "^5.2.7",
+		"@fontsource/press-start-2p": "^5.2.7",
 		"idb": "^8.0.3"
 	}
 }

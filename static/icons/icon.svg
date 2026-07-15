@@ -1,15 +1,9 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="112" fill="#16a34a"/>
-  <!-- wooden skittle -->
-  <g transform="translate(256 262)">
-    <!-- body -->
-    <path d="M-70 150
-             L-70 -30
-             C-70 -70 -40 -100 0 -100
-             C40 -100 70 -70 70 -30
-             L70 150 Z"
-          fill="#f5deb3" stroke="#b8860b" stroke-width="10" stroke-linejoin="round"/>
-    <!-- cut face where the number sits -->
-    <ellipse cx="0" cy="-30" rx="70" ry="26" fill="#eac887" stroke="#b8860b" stroke-width="10"/>
-  </g>
+<svg width="512" height="512" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <!-- dark tile -->
+  <rect width="32" height="32" fill="#151229"/>
+  <!-- flag field -->
+  <rect x="4" y="8" width="24" height="16" fill="#f3ecd6"/>
+  <!-- blue Nordic cross, offset toward the hoist -->
+  <rect x="9" y="8" width="4" height="16" fill="#0a5bd0"/>
+  <rect x="4" y="14" width="24" height="4" fill="#0a5bd0"/>
 </svg>

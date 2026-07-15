@@ -12,7 +12,8 @@ interface Particle {
 	life: number;
 }
 
-const COLORS = ['#16a34a', '#22c55e', '#eab308', '#f59e0b', '#ffffff'];
+// Coin gold, XP cyan, blood red, gem green, soul white — pixel pickups.
+const COLORS = ['#ffce3a', '#43cdea', '#ff4d5e', '#6ce06c', '#f3ecd6'];
 
 /**
  * A small, dependency-free confetti burst rendered on a throwaway full-screen canvas.

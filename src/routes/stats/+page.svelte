@@ -54,7 +54,7 @@
 		<Button href="/" variant="ghost" size="icon" aria-label="Back">
 			<ArrowLeft />
 		</Button>
-		<h1 class="text-xl font-semibold">Stats</h1>
+		<h1 class="font-display text-sm">Stats</h1>
 	</header>
 
 	{#if loading}
@@ -93,11 +93,11 @@
 						</div>
 						<div class="text-right">
 							{#if s.gamesPlayed > 0}
-								<p class="text-primary text-xl font-bold tabular-nums">
+								<p class="font-display text-primary text-sm tabular-nums">
 									<AnimatedNumber value={Math.round(s.winRate * 100)} suffix="%" />
 								</p>
 							{:else}
-								<p class="text-muted-foreground text-xl font-bold">—</p>
+								<p class="text-muted-foreground text-lg font-bold">—</p>
 							{/if}
 							<p class="text-muted-foreground text-xs">win rate</p>
 						</div>
