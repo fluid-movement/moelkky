@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import UpdatePrompt from '$lib/components/update-prompt.svelte';
 
 	let { children } = $props();
 </script>
@@ -15,3 +16,4 @@
 	<meta name="apple-mobile-web-app-title" content="Mölkky" />
 </svelte:head>
 {@render children()}
+<UpdatePrompt />

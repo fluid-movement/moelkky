@@ -33,11 +33,16 @@ export interface PlayerStanding {
 
 export type GameStatus = 'active' | 'finished';
 
+/** How the winner won: by reaching {@link WIN_SCORE}, or by being the last one not eliminated. */
+export type WinReason = 'score' | 'lastStanding';
+
 /** The fully derived state of a game at a point in time. */
 export interface Standings {
 	players: PlayerStanding[];
 	/** Index of the winning player, or `null` while the game is still active. */
 	winnerIndex: number | null;
+	/** Why the winner won, or `null` while the game is still active. */
+	winReason: WinReason | null;
 	status: GameStatus;
 }
 

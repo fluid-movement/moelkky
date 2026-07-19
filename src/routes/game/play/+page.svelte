@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { goto } from '$app/navigation';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { fly, scale } from 'svelte/transition';
 	import { backOut } from 'svelte/easing';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -20,6 +20,10 @@
 	let selectedCell = $state<ActiveCell | null>(null);
 	/** Set when the user closes the win dialog to review scores. */
 	let winDismissed = $state(false);
+	/** Whether the "Quit game?" confirmation is open (from the X button or a back gesture). */
+	let showQuit = $state(false);
+	/** Bypass flag so a confirmed quit is allowed through `beforeNavigate`. */
+	let allowLeave = false;
 
 	// Transient feedback state
 	let bustFlash = $state<number | null>(null);
@@ -39,6 +43,21 @@
 
 	const cellPop = () =>
 		motion.ok ? { duration: 260, start: 0.3, easing: backOut } : { duration: 0 };
+
+	// Intercept leaving an in-progress game (browser back, or any in-app link) and show
+	// the quit confirmation instead. A finished game or a confirmed quit passes through.
+	beforeNavigate((nav) => {
+		if (allowLeave || nav.type === 'leave') return;
+		if (!activeGame.hasGame || standings.status !== 'active') return;
+		nav.cancel();
+		showQuit = true;
+	});
+
+	function quit() {
+		allowLeave = true;
+		showQuit = false;
+		goto('/');
+	}
 
 	onMount(async () => {
 		if (!activeGame.hasGame) {
@@ -87,6 +106,10 @@
 		await tick();
 		const after = standings.players[p];
 
+		// Editing a winning score away un-finishes the game; forget any prior dismissal so
+		// the next win re-shows the dialog.
+		if (wasFinished && standings.status === 'active') winDismissed = false;
+
 		if (
 			!prevEliminated &&
 			points > 0 &&
@@ -119,11 +142,11 @@
 	<header class="flex items-center justify-between gap-2 px-4 py-3">
 		<h1 class="font-display text-sm">Scoring</h1>
 		<Button
-			href="/"
 			variant="ghost"
 			size="icon"
 			aria-label="Quit to home"
 			class="transition-transform active:scale-90"
+			onclick={() => (showQuit = true)}
 		>
 			<X />
 		</Button>
@@ -156,21 +179,20 @@
 						<th class="bg-background text-muted-foreground w-8 p-1 text-xs font-normal"></th>
 						{#each players as player, p (player.id)}
 							{@const st = standings.players[p]}
+							{@const won = standings.winnerIndex === p}
 							<th class="bg-background p-1 text-center {st.eliminated ? 'opacity-40' : ''}">
 								<div
 									class="flex flex-col items-center gap-0.5"
 									class:animate-shake={shakeCol === p}
 								>
 									<span class="flex max-w-24 items-center gap-1 truncate text-sm font-medium">
-										{#if st.hasWon}
+										{#if won}
 											<Trophy class="text-gold size-3.5 shrink-0" />
 										{/if}
 										{player.name}
 									</span>
 									<span
-										class="font-display text-xl tabular-nums {st.hasWon
-											? 'text-primary text-glow'
-											: ''}"
+										class="font-display text-xl tabular-nums {won ? 'text-primary text-glow' : ''}"
 										class:animate-bust={bustFlash === p}
 									>
 										<AnimatedNumber value={st.total} />
@@ -277,7 +299,11 @@
 				<Dialog.Title class="font-display text-primary text-glow text-lg leading-relaxed">
 					{activeGame.winner?.name} wins!
 				</Dialog.Title>
-				<Dialog.Description>Reached 50. Nicely thrown.</Dialog.Description>
+				<Dialog.Description>
+					{standings.winReason === 'lastStanding'
+						? 'Last one standing.'
+						: 'Reached 50. Nicely thrown.'}
+				</Dialog.Description>
 			</div>
 		</Dialog.Header>
 		<div class="flex flex-col gap-2">
@@ -285,5 +311,18 @@
 			<Button href="/" variant="outline">Home</Button>
 			<Button variant="ghost" onclick={() => (winDismissed = true)}>Review scores</Button>
 		</div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root bind:open={showQuit}>
+	<Dialog.Content class="sm:max-w-sm">
+		<Dialog.Header>
+			<Dialog.Title>Quit game?</Dialog.Title>
+			<Dialog.Description>Leave this game and go back home?</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (showQuit = false)}>Cancel</Button>
+			<Button variant="destructive" onclick={quit}>Quit</Button>
+		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

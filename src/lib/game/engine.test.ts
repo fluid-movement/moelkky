@@ -96,6 +96,56 @@ describe('computeStandings — winner selection', () => {
 		const s = computeStandings(grid, 2, NO_ELIM);
 		expect(s.winnerIndex).toBe(0);
 	});
+
+	it('reports winReason "score" for a 50-point win', () => {
+		const grid = fromColumns([[12, 12, 12, 12, 2]]);
+		expect(computeStandings(grid, 1, NO_ELIM).winReason).toBe('score');
+	});
+});
+
+describe('computeStandings — last one standing', () => {
+	it('the sole survivor wins once everyone else is eliminated', () => {
+		const grid = fromColumns([
+			[0, 0, 0], // p0 eliminated
+			[5, 5, 5] // p1 survives
+		]);
+		const s = computeStandings(grid, 2, WITH_ELIM);
+		expect(s.players[0].eliminated).toBe(true);
+		expect(s.winnerIndex).toBe(1);
+		expect(s.winReason).toBe('lastStanding');
+		expect(s.status).toBe('finished');
+	});
+
+	it('does not end while two or more players remain active', () => {
+		const grid = fromColumns([
+			[0, 0, 0], // p0 eliminated
+			[5, 5, 5], // p1 active
+			[5, 5, 5] // p2 active
+		]);
+		const s = computeStandings(grid, 3, WITH_ELIM);
+		expect(s.winnerIndex).toBeNull();
+		expect(s.status).toBe('active');
+	});
+
+	it('never awards a last-standing win when the elimination rule is off', () => {
+		const grid = fromColumns([
+			[0, 0, 0, 0], // no elimination possible
+			[5, 5, 5, 5]
+		]);
+		const s = computeStandings(grid, 2, NO_ELIM);
+		expect(s.winnerIndex).toBeNull();
+		expect(s.winReason).toBeNull();
+	});
+
+	it('prefers a 50-point win over last-standing when both could apply', () => {
+		const grid = fromColumns([
+			[0, 0, 0], // p0 eliminated
+			[12, 12, 12, 12, 2] // p1 reaches 50
+		]);
+		const s = computeStandings(grid, 2, WITH_ELIM);
+		expect(s.winnerIndex).toBe(1);
+		expect(s.winReason).toBe('score');
+	});
 });
 
 describe('computeStandings — editing re-derives downstream', () => {
@@ -130,11 +180,12 @@ describe('nextActiveCell', () => {
 	it('skips eliminated players', () => {
 		const grid = fromColumns([
 			[0, 0, 0], // p0 eliminated
-			[5, 5, 5]
+			[5, 5, 5], // p1 active
+			[5, 5, 5] // p2 active — two survivors, so the game continues
 		]);
-		const s = computeStandings(grid, 2, WITH_ELIM);
+		const s = computeStandings(grid, 3, WITH_ELIM);
 		expect(s.players[0].eliminated).toBe(true);
-		expect(nextActiveCell(grid, s, 2)).toEqual({ round: 3, playerIndex: 1 });
+		expect(nextActiveCell(grid, s, 3)).toEqual({ round: 3, playerIndex: 1 });
 	});
 
 	it('returns null when the game is finished', () => {

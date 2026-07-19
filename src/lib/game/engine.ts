@@ -1,5 +1,12 @@
 import { MAX_MISSES, MAX_THROW, MIN_THROW, OVERSHOOT_RESET, WIN_SCORE } from './constants';
-import type { ActiveCell, GameSettings, PlayerStanding, RoundGrid, Standings } from './types';
+import type {
+	ActiveCell,
+	GameSettings,
+	PlayerStanding,
+	RoundGrid,
+	Standings,
+	WinReason
+} from './types';
 
 /** Whether `points` is a legal single-throw score (integer 0–12). */
 export function isValidThrow(points: number): boolean {
@@ -78,9 +85,22 @@ export function computeStandings(
 		}
 	}
 
+	let winReason: WinReason | null = winnerIndex !== null ? 'score' : null;
+
+	// Last one standing: with elimination on, if nobody has reached 50 but every player
+	// bar one has been eliminated, the sole survivor wins.
+	if (winnerIndex === null && settings.eliminationRule && playerCount > 1) {
+		const survivors = players.filter((s) => !s.eliminated);
+		if (survivors.length === 1) {
+			winnerIndex = survivors[0].playerIndex;
+			winReason = 'lastStanding';
+		}
+	}
+
 	return {
 		players,
 		winnerIndex,
+		winReason,
 		status: winnerIndex !== null ? 'finished' : 'active'
 	};
 }

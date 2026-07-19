@@ -22,7 +22,13 @@ self.addEventListener('install', (event) => {
 		await cache.addAll(ASSETS);
 	}
 	event.waitUntil(addFilesToCache());
-	self.skipWaiting();
+	// Note: no skipWaiting() here — a freshly built worker stays in "waiting" so the client
+	// can prompt the user. It activates only when the page sends SKIP_WAITING (see below).
+});
+
+// The client (update-prompt.svelte) posts this once the user accepts the update.
+self.addEventListener('message', (event) => {
+	if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
